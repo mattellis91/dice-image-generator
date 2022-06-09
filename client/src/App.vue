@@ -11,4 +11,6 @@ import HelloWorld from '@/components/HelloWorld.vue'
 
 <style>
 @import '@/assets/base.css';
+@import '@/assets/bootstrap.min.css';
+@import '@/assets/style.css';
 </style>
