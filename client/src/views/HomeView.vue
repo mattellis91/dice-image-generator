@@ -1,13 +1,27 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import axios from 'axios';
+  import { onMounted } from 'vue';
+  import axios from 'axios';
+  import useFileList from '../compositions/file-list'
+  import DropZone from '../components/DropZone.vue'
 
-onMounted(() => {
-  console.log("mounted");
-  axios.get("http://localhost:5000/").then((res) => {
-    console.log(res);
+  const {files, addFiles, removeFile } = useFileList();
+
+  onMounted(() => {
+    
+    console.log(files);
+    console.log(addFiles);
+    console.log(removeFile)
+
+    console.log("mounted");
+    axios.get("http://localhost:5000/").then((res) => {
+      console.log(res);
+    });
   });
-});
+
+  function onInputChange(e) {
+    addFiles(e.target.files);
+    e.target.value = null;
+  }
 </script>
 
 <template>
@@ -78,18 +92,14 @@ onMounted(() => {
         <div class="row">
           <div class="col-md-12">
             <div class="titlepage">
-              <h2>What’s New In Web Hosting</h2>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="web_hosting">
-              <figure><img src="images/web.jpg" alt="#" /></figure>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate</p>
-              <a href="#">Read more</a>
+              <DropZone class="drop-area" @files-dropped="addFiles" #default="{dropZoneActive}">
+                <div v-if="dropZoneActive">
+                  <div>Drop Files</div>
+                </div>
+                <div v-else>
+                  <div>Drag Your Files Here</div>
+                </div>
+              </DropZone>
             </div>
           </div>
         </div>
