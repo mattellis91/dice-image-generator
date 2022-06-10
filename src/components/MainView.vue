@@ -30,14 +30,12 @@
             </v-row>
         </v-form>
       </v-col>
-    </v-row>
-  </v-container>
 
-  <v-row>
-    <v-col cols="12">
+      <v-col cols="12">
           <canvas id="canvas"></canvas>
     </v-col>
-  </v-row>
+    </v-row>
+  </v-container>
   </div>
 </template>
 
@@ -72,18 +70,35 @@
         const image = new Image();
         image.src = URL.createObjectURL(this.file);
         image.onload = () => {
+          this.canvas.style.margin = 'auto';
+          
+          const maxSize = Math.floor(Math.sqrt(this.dMax));
+          const percentage = Math.min(maxSize / image.width, maxSize / image.height);
+          const resultWidth = Math.floor(image.width * percentage);
+          const resultHeight = Math.floor(image.height * percentage);
+          if(resultWidth <= image.width && resultHeight <= image.height) {
+            image.width = resultWidth;
+            image.height = resultHeight;
+          }
+
           this.canvas.width = image.width;
           this.canvas.height = image.height;
-          this.canvas.style.margin = 'auto';
-          this.ctx.drawImage(image, 0, 0);
+          
+          console.log(percentage);
+          console.log(maxSize);
+          console.log(image);
+          
+          this.ctx.drawImage(image, 0, 0, image.width, image.height);
           const imageData = this.ctx.getImageData(0,0, image.width, image.height);
           const pixels = imageData.data;
+
           console.log(imageData);
           console.log('width ' + imageData.width);
           console.log('height ' + imageData.height);
           console.log('pixels: ' + imageData.data.length / 4);
           console.log('dice wide ' + this.getDiceCount(imageData.width));
           console.log('dice high ' + this.getDiceCount(imageData.height));
+
 
           //convert img pixels to greyscale
           for (var i = 0; i < pixels.length; i += 4) {
