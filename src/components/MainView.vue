@@ -50,7 +50,8 @@
       file:null,
       showCanvas: false,
       canvas: null,
-      ctx: null
+      ctx: null,
+      diceMap: {}
     }),
 
     methods: {
@@ -91,26 +92,33 @@
           this.ctx.drawImage(image, 0, 0, image.width, image.height);
           const imageData = this.ctx.getImageData(0,0, image.width, image.height);
           const pixels = imageData.data;
-
+          const diceValues = [];
+          
           console.log(imageData);
           console.log('width ' + imageData.width);
           console.log('height ' + imageData.height);
           console.log('pixels: ' + imageData.data.length / 4);
-          console.log('dice wide ' + this.getDiceCount(imageData.width));
-          console.log('dice high ' + this.getDiceCount(imageData.height));
 
 
           //convert img pixels to greyscale
           for (var i = 0; i < pixels.length; i += 4) {
-
             let lightness = parseInt((pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3);
-
             pixels[i] = lightness;
             pixels[i + 1] = lightness;
             pixels[i + 2] = lightness;
           }
 
           this.ctx.putImageData(imageData, 0, 0);
+
+          for(let i = 0; i < imageData.width; i++) {
+            for(let j = 0; j < imageData.height; j++) {
+              const pixel = this.ctx.getImageData(i,j,1,1);
+              const lightness = parseInt((pixel.data[0] + pixel.data[1] + pixel.data[2]) / 3);
+              diceValues.push(this.getDiceValue(lightness));
+            }
+          }
+
+          console.log(diceValues);
         }
 
         console.log(this.ctx);
@@ -118,7 +126,11 @@
 
       getDiceCount(x) {
         return (x * 2) / 10;
-      }
+      },
+
+      getDiceValue(x) {
+        return Math.round((x / 255) * 6);
+      },
 
     }
 
